@@ -31,12 +31,18 @@ namespace shopping_cart_api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ShoppingCart>> GetShoppingCart(int id)
         {
+            var CartItemQuery = from ci in _context.CartItems
+                                where ci.ShoppingCartId == id
+                                select ci;
+
             var ShoppingCart = await _context.ShoppingCarts.FindAsync(id);
 
             if (ShoppingCart == null)
             {
                 return NotFound();
             }
+
+            ShoppingCart.CartItems = CartItemQuery.OrderBy(ci => ci.Product.Name).ToList();
 
             return ShoppingCart;
         }
