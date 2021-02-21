@@ -8,7 +8,7 @@ namespace shopping_cart_api.Models
         [Required]
         public int ShoppingCartId { get; set; }
 
-        public IEnumerable<Product> Products { get; set; }
+        public IEnumerable<CartItem> CartItems { get; set; }
 
     }
 }
