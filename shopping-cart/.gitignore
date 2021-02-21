@@ -41,6 +41,10 @@ yarn-error.log
 testem.log
 /typings
 
+# backend misc
+/shopping-cart-api/bin
+/shopping-cart-api/obj
+
 # System Files
 .DS_Store
 Thumbs.db
