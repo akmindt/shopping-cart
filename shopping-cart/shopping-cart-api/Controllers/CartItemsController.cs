@@ -33,6 +33,19 @@ namespace shopping_cart_api.Controllers
             return await Task.FromResult(Ok(result));            
         }
 
+        // GET: api/CartItems
+        [HttpGet("CartId/{id}")]
+        [ProducesResponseType(typeof(IEnumerable<CartItemDTO>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CartItemDTO>>> GetAllCartItemsByType([FromBody] int id)
+        {
+            var cartItemQuery = from ci in _context.CartItems
+                                where ci.ShoppingCartId == id
+                                select ci;
+            List<CartItemDTO> result =  ConvertCartItemsToDTO(cartItemQuery.ToList());
+
+            return await Task.FromResult(Ok(result));            
+        }
+
         // GET: api/CartItems/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(IEnumerable<CartItemDTO>), StatusCodes.Status200OK)]
@@ -88,11 +101,15 @@ namespace shopping_cart_api.Controllers
         [HttpPost]
         public async Task<ActionResult<CartItem>> PostCartItem(CartItemDTO cartItemDTO)
         {
+            if(!CartItemExists(cartItemDTO.CartItemId)){
+
             CartItem newItem = ConvertDTOToCartItem(cartItemDTO);
             _context.CartItems.Add(newItem);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetCartItem), new { id = newItem.CartItemId }, newItem);
+            }
+            return NoContent();
         }
 
         // DELETE: api/CartItems/5

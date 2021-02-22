@@ -14,12 +14,15 @@ export class CartItemService {
     return this.http.get<CartItem[]>(this.api);
   }
 
+  getAllCartItemsByType(cartId: number): Observable<CartItem[]> {
+    return this.http.get<CartItem[]>(this.api + '/CartId/' + cartId);
+  }
+
   getCartItem(id: number): Observable<CartItem> {
     return this.http.get<CartItem>(this.api + '/' + id);
   }
 
   postCartItem(CartItem: CartItem): Observable<CartItem>{
-    console.log(CartItem);
     return this.http.post<CartItem>(this.api, CartItem);
   }
 

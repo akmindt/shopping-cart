@@ -5,13 +5,21 @@ import { CartItem } from '../Entities/CartItem';
 import { ProductService } from '../Services/product.service';
 import { CartItemService } from '../Services/cart-item-service.service';
 
+export interface DisplayableCartItem {
+  name: string;
+  description?: string;
+  quantity: number;
+}
+
 @Component({
   selector: 'shopping-cart',
   templateUrl: './shopping-cart.component.html',
   styleUrls: ['./shopping-cart.component.scss']
 })
+
+
 export class ShoppingCartComponent implements OnInit {
-  public displayableProducts = [];
+  public displayableCartItems: DisplayableCartItem[] = [];
   public products: Product[] = [];
   public cartItems: CartItem[] = [];
 
@@ -24,11 +32,11 @@ export class ShoppingCartComponent implements OnInit {
     this.generateMockData();
   }
 
-  generateMockData() {
+  private generateMockData() {
     this.generateProducts();
   }
 
-  generateProducts(){
+  private generateProducts(){
     console.log("Creating mock data in database");
     let productToAdd: Product =  {
       name: 'Superfast Jellyfish',
@@ -65,7 +73,7 @@ export class ShoppingCartComponent implements OnInit {
     });
   }
 
-  generateCartItems(){
+  private generateCartItems(){
     let cartItemToAdd: CartItem = {
       cartItemId: 1,
       shoppingCartId: 1,
@@ -95,10 +103,31 @@ export class ShoppingCartComponent implements OnInit {
           };
           this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
             console.log("Finished creating mock data.");
+            this.loadData();
           });
         });
       });
     });
   }
 
+  private loadData() {
+    this.productService.getAllProducts().pipe(take(1)).subscribe( res => {
+      this.products = res;
+
+      this.cartItemService.getAllCartItems().pipe(take(1)).subscribe( res => {
+        this.cartItems = res;
+        this.cartItems.forEach(item => {
+          const product = this.products[item.productId - 1];
+          const newDisplayableItem: DisplayableCartItem = {
+            
+            name: product.name,
+            description: product.description,
+            quantity: item.quantity
+          }
+          this.displayableCartItems.push(newDisplayableItem);
+        });
+      });
+    });
+    
+  }
 }

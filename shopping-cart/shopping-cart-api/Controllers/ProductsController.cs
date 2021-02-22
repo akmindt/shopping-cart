@@ -25,7 +25,7 @@ namespace shopping_cart_api.Controllers
         [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            List<Product> result = await _context.Products.ToListAsync();
+            List<Product> result = _context.Products.OrderBy(p => p.ProductId).ToList();
             return await Task.FromResult(Ok(result));
         }
 
@@ -83,10 +83,14 @@ namespace shopping_cart_api.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct([FromBody] Product product)
         {
+            if(!ProductExists(product.ProductId)){
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, product);
+            }
+            return NoContent();
         }
 
         // DELETE: api/Products/5
