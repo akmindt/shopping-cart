@@ -22,14 +22,17 @@ namespace shopping_cart_api.Controllers
 
         // GET: api/Products
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Product>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
-            return await _context.Products.ToListAsync();
+            List<Product> result = await _context.Products.ToListAsync();
+            return await Task.FromResult(Ok(result));
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        public async Task<ActionResult<Product>> GetProduct([FromRoute] int id)
         {
             var product = await _context.Products.FindAsync(id);
 
@@ -38,13 +41,16 @@ namespace shopping_cart_api.Controllers
                 return NotFound();
             }
 
-            return product;
+            return Ok(product);
         }
 
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, Product product)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PutProduct([FromRoute] int id, [FromBody] Product product)
         {
             if (id != product.ProductId)
             {
@@ -75,7 +81,7 @@ namespace shopping_cart_api.Controllers
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult<Product>> PostProduct([FromBody] Product product)
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -85,6 +91,8 @@ namespace shopping_cart_api.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
