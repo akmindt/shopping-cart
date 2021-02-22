@@ -32,7 +32,7 @@ export interface DisplayableCartItem {
 
 export class ShoppingCartComponent implements OnInit {
   public dcProducts = ['name', 'description', 'price', 'inStock', 'add'];
-  public dcCartItems = ['name', 'description', 'quantity', 'total', 'remove']
+  public dcCartItems = ['name', 'description', 'quantity', 'total', 'remove'];
   public displayableProducts: DisplayableProduct[] = [];
   public displayableCartItems: DisplayableCartItem[] = [];
   public products: Product[] = [];
@@ -62,13 +62,15 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   public updateQuantity($event: number[]){
-    const updatedItem = this.cartItems[$event[0] - 1];
-    updatedItem.quantity = $event[1];
+    this.cartItemService.getCartItem($event[0]).pipe(take(1)).subscribe( ci => {
 
-    this.cartItemService.putCartItem($event[0], updatedItem).pipe(take(1)).subscribe(() => {
-      console.log("Updated quantity of item: " + $event[0]);
-      this.loadData();
+      ci.quantity = $event[1];
+      this.cartItemService.putCartItem($event[0], ci).pipe(take(1)).subscribe(() => {
+        console.log("Updated quantity of item: " + $event[0]);
+        this.loadData();
+      });
     });
+
   }
 
   private generateMockData() {
@@ -181,7 +183,7 @@ export class ShoppingCartComponent implements OnInit {
             description: product.description,
             quantity: item.quantity,
             stock: product.stock,
-            total: "\$" + (item.quantity * product.price)
+            total: "\$" + (item.quantity * product.price).toFixed(2)
           };
           console.log(newDisplayableItem);
           this.subTotal += item.quantity * product.price;
