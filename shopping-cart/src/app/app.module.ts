@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
+import { ScChangeQuantityComponent } from './sc-change-quantity/sc-change-quantity.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ScToolbarComponent } from './sc-toolbar/sc-toolbar.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -15,11 +16,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     ShoppingCartComponent,
     ScToolbarComponent,
+    ScChangeQuantityComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,7 +37,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatTableModule,
     MatInputModule,
     MatFormFieldModule,
-    MatDialogModule
+    MatDialogModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [ShoppingCartComponent]

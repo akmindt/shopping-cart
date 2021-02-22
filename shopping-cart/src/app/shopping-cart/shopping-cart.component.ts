@@ -5,7 +5,6 @@ import { CartItem } from '../Entities/CartItem';
 import { ProductService } from '../Services/product.service';
 import { CartItemService } from '../Services/cart-item-service.service';
 import { MatSidenav } from '@angular/material/sidenav';
-import { MatTableDataSource } from '@angular/material/table';
 
 export interface DisplayableProduct {
   productId: number;
@@ -20,6 +19,7 @@ export interface DisplayableCartItem {
   name: string;
   description?: string;
   quantity: number;
+  stock: number;
   total: string;
 }
 
@@ -54,10 +54,21 @@ export class ShoppingCartComponent implements OnInit {
 
   public order(productId: number){
     console.log("Ordering: " + productId);
+
   }
 
   public remove(cartId: number){
     console.log("Removing: " + cartId);
+  }
+
+  public updateQuantity($event: number[]){
+    const updatedItem = this.cartItems[$event[0] - 1];
+    updatedItem.quantity = $event[1];
+
+    this.cartItemService.putCartItem($event[0], updatedItem).pipe(take(1)).subscribe(() => {
+      console.log("Updated quantity of item: " + $event[0]);
+      this.loadData();
+    });
   }
 
   private generateMockData() {
@@ -169,6 +180,7 @@ export class ShoppingCartComponent implements OnInit {
             name: product.name,
             description: product.description,
             quantity: item.quantity,
+            stock: product.stock,
             total: "\$" + (item.quantity * product.price)
           };
           console.log(newDisplayableItem);

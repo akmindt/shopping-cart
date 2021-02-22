@@ -28,7 +28,7 @@ namespace shopping_cart_api.Controllers
         {
             var cartItemQuery = from ci in _context.CartItems
                                 select ci;
-            List<CartItemDTO> result =  ConvertCartItemsToDTO(cartItemQuery.ToList());
+            List<CartItemDTO> result =  ConvertCartItemsToDTO(cartItemQuery.OrderBy(ci => ci.CartItemId).ToList());
 
             return await Task.FromResult(Ok(result));            
         }

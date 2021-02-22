@@ -21,7 +21,9 @@
                     <!-- Availability -->
                     <ng-container matColumnDef="quantity">
                         <th mat-header-cell *matHeaderCellDef> # </th>
-                        <td mat-cell *matCellDef="let item"> {{item.quantity}} </td>
+                        <td mat-cell *matCellDef="let item"> 
+                            <sc-change-quantity [item]='item' (updateQuantity)='updateQuantity($event)'></sc-change-quantity>
+                        </td>
                     </ng-container>
                     
                     <!-- Price -->
