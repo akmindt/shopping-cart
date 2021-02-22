@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
+using shopping_cart_api.Models;
 
 namespace shopping_cart_api
 {
     public class Startup
     {
+        private string AllowAll = "AllowAll";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,8 +22,19 @@ namespace shopping_cart_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<ShoppingCartContext>(opt => opt.UseInMemoryDatabase("ShoppingCart"));
             services.AddControllers();
+            services.AddCors( options => 
+            {
+                options.AddPolicy(name: AllowAll,
+                                builder => 
+                                {
+                                    builder.AllowAnyOrigin()
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                                });
+            });
+            services.AddHttpClient();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "shopping_cart_api", Version = "v1" });
@@ -47,6 +54,8 @@ namespace shopping_cart_api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(AllowAll);
 
             app.UseAuthorization();
 
