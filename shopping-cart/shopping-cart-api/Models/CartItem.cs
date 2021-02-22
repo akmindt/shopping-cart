@@ -12,6 +12,7 @@ namespace shopping_cart_api.Models
         public int ShoppingCartId { get; set; }
 
         [ForeignKey("ProductId")]
+        public int ProductId { get; set; }
         public Product Product { get; set; }
 
         [Required]

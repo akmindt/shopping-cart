@@ -129,7 +129,7 @@ namespace shopping_cart_api.Controllers
             {
                 CartItemId = modelItem.CartItemId,
                 ShoppingCartId = modelItem.ShoppingCartId,
-                ProductId = modelItem.Product.ProductId,
+                ProductId = modelItem.ProductId,
                 Quantity = modelItem.Quantity
             };
         }
@@ -150,6 +150,7 @@ namespace shopping_cart_api.Controllers
             {
                 CartItemId = dtoItem.CartItemId,
                 ShoppingCartId = dtoItem.ShoppingCartId,
+                ProductId = dtoItem.ProductId,
                 Product = productQuery.First(),
                 Quantity = dtoItem.Quantity
             };

@@ -9,8 +9,5 @@ namespace shopping_cart_api.Models
         
         [Required]
         public string UserName { get; set; }
-        
-        [ForeignKey("ShoppingCartId")]
-        public ShoppingCart ShoppingCart { get; set; }   
     }
 }
