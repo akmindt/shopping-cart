@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'sc-toolbar',
@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./sc-toolbar.component.scss']
 })
 export class ScToolbarComponent implements OnInit {
+  @Output() toggleCart = new EventEmitter(); 
 
   constructor() { }
 
@@ -13,6 +14,7 @@ export class ScToolbarComponent implements OnInit {
 
   }
 
-  
-
+  toggle(){
+    this.toggleCart.emit(null);
+  } 
 }

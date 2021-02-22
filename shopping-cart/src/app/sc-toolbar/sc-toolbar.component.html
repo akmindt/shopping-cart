@@ -1,4 +1,11 @@
 <mat-toolbar>
-    <mat-icon class='navbar-icon'>shopping_cart</mat-icon>
-    <span>Your cart</span>
+    <mat-icon class='navbar-icon'>store</mat-icon>
+    <span>ShopMart.com</span>
+    <span class="spacer"></span>
+    <div class="cart-button">
+        Your Cart
+        <button mat-icon-button (click)='toggle()'>
+            <mat-icon>shopping_cart</mat-icon>
+        </button>
+    </div>
 </mat-toolbar>
