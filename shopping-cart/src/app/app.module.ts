@@ -9,7 +9,7 @@ import { ScToolbarComponent } from './sc-toolbar/sc-toolbar.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTable, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,7 @@ import { MatTable, MatTableModule } from '@angular/material/table';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatTable
+    MatTableModule
   ],
   providers: [],
   bootstrap: [ShoppingCartComponent]

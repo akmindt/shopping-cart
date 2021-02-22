@@ -7,10 +7,23 @@ import { Product } from '../Entities/Product';
   providedIn: 'root'
 })
 export class ProductService {
-  private api = 'api/ProductsController';
+  private api: string = 'api/Products';
   constructor(private http: HttpClient) { }
 
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.api);
+  }
+
+  getProduct(id: number): Observable<Product> {
+    return this.http.get<Product>(this.api + '/' + id);
+  }
+
+  postProduct(product: Product): Observable<Product>{
+    console.log(product);
+    return this.http.post<Product>(this.api, product);
+  }
+
+  putProduct(id: number, product: Product): Observable<Product>{
+    return this.http.put<Product>(this.api + '/' + id, product);
   }
 }
