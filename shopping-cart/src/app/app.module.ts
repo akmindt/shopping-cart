@@ -19,6 +19,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ScDeleteDialogComponent } from './sc-delete-dialog/sc-delete-dialog.component';
 import { ScAddToCartDialogComponent } from './sc-add-to-cart-dialog/sc-add-to-cart-dialog.component';
+import { ScEmptyCartDialogComponent } from './sc-empty-cart-dialog/sc-empty-cart-dialog.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ScAddToCartDialogComponent } from './sc-add-to-cart-dialog/sc-add-to-ca
     ScChangeQuantityComponent,
     ScDeleteDialogComponent,
     ScAddToCartDialogComponent,
+    ScEmptyCartDialogComponent,
   ],
   imports: [
     BrowserModule,

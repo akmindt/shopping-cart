@@ -8,6 +8,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { MatDialog } from '@angular/material/dialog';
 import { ScDeleteDialogComponent } from '../sc-delete-dialog/sc-delete-dialog.component';
 import { ScAddToCartDialogComponent } from '../sc-add-to-cart-dialog/sc-add-to-cart-dialog.component';
+import { ScEmptyCartDialogComponent } from '../sc-empty-cart-dialog/sc-empty-cart-dialog.component';
 
 export interface DisplayableProduct {
   productId: number;
@@ -41,6 +42,8 @@ export class ShoppingCartComponent implements OnInit {
   public products: Product[] = [];
   public cartItems: CartItem[] = [];
   public subTotal: number = 0;
+  public taxes: number = 0;
+  public total: number = 0;
   
   @ViewChild('cartDrawer') cartDrawer?: MatSidenav;
 
@@ -53,41 +56,53 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   public toggleCart($event: any){
-    this.cartDrawer?.toggle();
+    if(this.cartItems.length > 0 || this.cartDrawer?.opened){
+      this.cartDrawer?.toggle();
+    } else {
+      this.showEmptyCartAlert();
+    }
+  }
+
+  private showEmptyCartAlert(){
+    const dialogRef = this.dialog.open(ScEmptyCartDialogComponent, {
+      width: '300px'
+    });
   }
 
   public order(productId: number){
-    const dialogRef = this.dialog.open(ScAddToCartDialogComponent, {
-      width: '300px',
-      data: {
-        name: this.products[productId - 1].name,
-        quantity: 1
-      }
-    });
+    if(this.products[productId - 1].stock > 0){
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.productService.getProduct(productId).pipe(take(1)).subscribe(p => {
-        p.stock -= result;
-        this.productService.putProduct(p.productId, p).pipe(take(1)).subscribe(() => {
-          const existingItem = this.cartItems.find(ci => ci.productId == productId);
-          if(existingItem){
-            existingItem.quantity += result;
-            this.cartItemService.putCartItem(existingItem.cartItemId!, existingItem).pipe(take(1)).subscribe(() => {
-              this.loadData();
-            });
-          } else {
-            const newItem: CartItem = {
-              productId: productId,
-              quantity: result
+      const dialogRef = this.dialog.open(ScAddToCartDialogComponent, {
+        width: '300px',
+        data: {
+          name: this.products[productId - 1].name,
+          quantity: 1
+        }
+      });
+      
+      dialogRef.afterClosed().subscribe(result => {
+        this.productService.getProduct(productId).pipe(take(1)).subscribe(p => {
+          p.stock -= result;
+          this.productService.putProduct(p.productId, p).pipe(take(1)).subscribe(() => {
+            const existingItem = this.cartItems.find(ci => ci.productId == productId);
+            if(existingItem){
+              existingItem.quantity += result;
+              this.cartItemService.putCartItem(existingItem.cartItemId!, existingItem).pipe(take(1)).subscribe(() => {
+                this.loadData(true);
+              });
+            } else {
+              const newItem: CartItem = {
+                productId: productId,
+                quantity: result
+              }
+              this.cartItemService.postCartItem(newItem).subscribe(() => {
+                this.loadData(true);
+              });
             }
-            this.cartItemService.postCartItem(newItem).subscribe(() => {
-              this.loadData();
-            });
-          }
+          });
         });
       });
-    });
-
+    }
   }
 
   public remove(itemId: number){
@@ -103,7 +118,7 @@ export class ShoppingCartComponent implements OnInit {
           this.productService.putProduct(p.productId, p).subscribe(() => {
 
             this.cartItemService.deleteCartItem(result).subscribe(() => {
-              this.loadData();
+              this.loadData(false);
             });
           });
         });
@@ -120,7 +135,7 @@ export class ShoppingCartComponent implements OnInit {
         this.productService.getProduct(ci.productId).pipe(take(1)).subscribe(p => {
           p.stock += originalAmount - $event[1];
           this.productService.putProduct(p.productId, p).pipe(take(1)).subscribe(() => {
-            this.loadData();
+            this.loadData(false);
           });
         }); 
       });
@@ -129,10 +144,6 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   private generateMockData() {
-    this.generateProducts();
-  }
-
-  private generateProducts(){
     console.log("Creating mock data in database");
     let productToAdd: Product =  {
       productId: 1,
@@ -166,38 +177,16 @@ export class ShoppingCartComponent implements OnInit {
             price: 0.10
           };
           this.productService.postProduct(productToAdd).pipe(take(1)).subscribe(() => {
-            this.generateCartItems();
+            console.log("Finished creating mock data.");
+            this.loadData(true);
           });
         });
       });
     });
   }
 
-  private generateCartItems(){
-    let cartItemToAdd: CartItem = {
-      cartItemId: 1,
-      productId: 1,
-      quantity: 5
-    };
-    this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
-      let cartItemToAdd: CartItem = {
-        cartItemId: 2,
-        productId: 2,
-        quantity: 3
-      };
-      this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
-        let cartItemToAdd: CartItem = {
-          cartItemId: 3,
-          productId: 3,
-          quantity: 1
-        };
-            console.log("Finished creating mock data.");
-            this.loadData();
-        });
-      });
-  }
-
-  private loadData() {
+  private loadData(toggleCart: boolean) {
+    this.subTotal = 0;
     this.productService.getAllProducts().pipe(take(1)).subscribe( res => {
       this.products = res;
       const newDisplayableProducts: DisplayableProduct[] = [];
@@ -227,10 +216,15 @@ export class ShoppingCartComponent implements OnInit {
               stock: product.stock,
               total: "\$" + (item.quantity * product.price).toFixed(2)
             };
-            this.subTotal += item.quantity * product.price;
+            this.subTotal += (item.quantity * product.price);
             newDisplayableItems.push(newDisplayableItem);
         });
         this.displayableCartItems = newDisplayableItems;
+        this.taxes = this.subTotal * 0.08;
+        this.total = this.subTotal + this.taxes;
+        if(toggleCart || this.cartItems.length == 0){
+          this.toggleCart(null);
+        }
       });
     });
     

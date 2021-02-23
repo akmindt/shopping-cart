@@ -3,7 +3,7 @@
 </div>
 <mat-drawer-container class='cart-container'>
     <mat-drawer #cartDrawer class='cart' position='end' mode='over'>
-        <div class='content'>
+        <mat-card class='content'>
                 <table mat-table [dataSource]='displayableCartItems' class="mat-elevation-z8 product-table">
                     <!-- Name -->
                     <ng-container matColumnDef="name">
@@ -44,7 +44,12 @@
                     <tr mat-header-row *matHeaderRowDef="dcCartItems"></tr>
                     <tr mat-row *matRowDef="let row; columns: dcCartItems;"></tr>
                 </table>
-        </div>
+                <div class='totals'>
+                    <p>Sub-total: ${{this.subTotal.toFixed(2)}}</p>
+                    <p>Taxes: ${{this.taxes.toFixed(2)}}</p>
+                    <p>Grand Total: ${{this.total.toFixed(2)}}</p>
+                </div>
+            </mat-card>
     </mat-drawer>
     <div class='content'>
         <mat-card class='table-container'>
