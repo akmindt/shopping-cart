@@ -8,6 +8,6 @@ To run:</p>
 <li>Open powershell or terminal</li>
 <li>Navigate to the repository base directory</li>
 <li>Run <code>docker-compose up -d</code></li>
-<li>Once the containers are built navigate to localhost:3000 in a web browser</li>
+<li>Once the containers are built navigate to <code>http://localhost:3000</code> in a web browser</li>
 </ul>
 
