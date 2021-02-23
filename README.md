@@ -1,7 +1,3 @@
----
-
-
----
 
 <h1 id="shopping-cart">shopping-cart</h1>
 <p>Running the application<br>
