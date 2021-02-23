@@ -1,0 +1,15 @@
+version: "3"
+services:
+    shopping-cart:
+        build:
+            context: ./shopping-cart
+            dockerfile: Dockerfile
+        ports: 
+            - 3000:80
+
+    ahopping-cart-api:
+        build:
+            context: ./shopping-cart/shopping-cart-api
+            dockerfile: Dockerfile
+        ports:
+            - 5000:80
