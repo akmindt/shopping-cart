@@ -1,0 +1,21 @@
+version: "3"
+services: 
+    nginx:
+        build: 
+            context: ./nginx
+            dockerfile: Dockerfile
+        ports: 
+            - 80:80
+        restart: always
+    client:
+        build:
+            context: ./shopping-cart
+            dockerfile: Dockerfile
+        ports: 
+            - 5000:80
+    shopping-cart-api:
+        build: 
+            context: ./shopping-cart-api
+            dockerfile: Dockerfile
+        ports: 
+            - 3000:80
