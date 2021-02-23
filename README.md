@@ -4,7 +4,7 @@
 Requirements: Docker<br>
 To run:</p>
 <ul>
-<li>Clone down this repository</li>
+<li>Clone this repository</li>
 <li>Open powershell or terminal</li>
 <li>Navigate to the repository base directory</li>
 <li>Run <code>docker-compose up -d</code></li>
