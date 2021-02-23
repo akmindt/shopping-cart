@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Remove</h1>
+<div mat-dialog-content>
+  <p>Are you sure you would like to remove all of this item?</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button [mat-dialog-close]="id">Remove</button>
+</div>

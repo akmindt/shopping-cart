@@ -7,6 +7,7 @@ import { CartItem } from '../Entities/CartItem';
   providedIn: 'root'
 })
 export class CartItemService {
+  
   private api: string = 'api/CartItems';
   constructor(private http: HttpClient) { }
 
@@ -28,5 +29,9 @@ export class CartItemService {
 
   putCartItem(id: number, CartItem: CartItem): Observable<CartItem>{
     return this.http.put<CartItem>(this.api + '/' + id, CartItem);
+  }
+
+  deleteCartItem(id: number) {
+    return this.http.delete<CartItem>(this.api + '/' + id);
   }
 }

@@ -13,7 +13,6 @@ export class ScChangeQuantityComponent implements OnInit {
     cartItemId: 0,
     productId: 0,
     quantity: 0,
-    shoppingCartId: 0
   };
   @Output() updateQuantity = new EventEmitter<number[]>();
   quantityFC = new FormControl('');

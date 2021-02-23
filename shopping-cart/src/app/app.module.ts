@@ -17,12 +17,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ScDeleteDialogComponent } from './sc-delete-dialog/sc-delete-dialog.component';
+import { ScAddToCartDialogComponent } from './sc-add-to-cart-dialog/sc-add-to-cart-dialog.component';
 
 @NgModule({
   declarations: [
     ShoppingCartComponent,
     ScToolbarComponent,
     ScChangeQuantityComponent,
+    ScDeleteDialogComponent,
+    ScAddToCartDialogComponent,
   ],
   imports: [
     BrowserModule,

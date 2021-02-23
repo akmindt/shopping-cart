@@ -5,6 +5,9 @@ import { CartItem } from '../Entities/CartItem';
 import { ProductService } from '../Services/product.service';
 import { CartItemService } from '../Services/cart-item-service.service';
 import { MatSidenav } from '@angular/material/sidenav';
+import { MatDialog } from '@angular/material/dialog';
+import { ScDeleteDialogComponent } from '../sc-delete-dialog/sc-delete-dialog.component';
+import { ScAddToCartDialogComponent } from '../sc-add-to-cart-dialog/sc-add-to-cart-dialog.component';
 
 export interface DisplayableProduct {
   productId: number;
@@ -42,7 +45,8 @@ export class ShoppingCartComponent implements OnInit {
   @ViewChild('cartDrawer') cartDrawer?: MatSidenav;
 
   constructor(private productService: ProductService,
-              private cartItemService: CartItemService) { }
+              private cartItemService: CartItemService,
+              public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.generateMockData();
@@ -53,21 +57,72 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   public order(productId: number){
-    console.log("Ordering: " + productId);
+    const dialogRef = this.dialog.open(ScAddToCartDialogComponent, {
+      width: '300px',
+      data: {
+        name: this.products[productId - 1].name,
+        quantity: 1
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.productService.getProduct(productId).pipe(take(1)).subscribe(p => {
+        p.stock -= result;
+        this.productService.putProduct(p.productId, p).pipe(take(1)).subscribe(() => {
+          const existingItem = this.cartItems.find(ci => ci.productId == productId);
+          if(existingItem){
+            existingItem.quantity += result;
+            this.cartItemService.putCartItem(existingItem.cartItemId!, existingItem).pipe(take(1)).subscribe(() => {
+              this.loadData();
+            });
+          } else {
+            const newItem: CartItem = {
+              productId: productId,
+              quantity: result
+            }
+            this.cartItemService.postCartItem(newItem).subscribe(() => {
+              this.loadData();
+            });
+          }
+        });
+      });
+    });
 
   }
 
-  public remove(cartId: number){
-    console.log("Removing: " + cartId);
+  public remove(itemId: number){
+    const dialogRef = this.dialog.open(ScDeleteDialogComponent, {
+      width: '300px',
+      data: itemId
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.cartItemService.getCartItem(result).subscribe(ci => {
+        this.productService.getProduct(ci.productId).subscribe(p => {
+          p.stock += ci.quantity;
+          this.productService.putProduct(p.productId, p).subscribe(() => {
+
+            this.cartItemService.deleteCartItem(result).subscribe(() => {
+              this.loadData();
+            });
+          });
+        });
+      });
+    });
   }
 
   public updateQuantity($event: number[]){
     this.cartItemService.getCartItem($event[0]).pipe(take(1)).subscribe( ci => {
-
+      const originalAmount = ci.quantity;
       ci.quantity = $event[1];
       this.cartItemService.putCartItem($event[0], ci).pipe(take(1)).subscribe(() => {
         console.log("Updated quantity of item: " + $event[0]);
-        this.loadData();
+        this.productService.getProduct(ci.productId).pipe(take(1)).subscribe(p => {
+          p.stock += originalAmount - $event[1];
+          this.productService.putProduct(p.productId, p).pipe(take(1)).subscribe(() => {
+            this.loadData();
+          });
+        }); 
       });
     });
 
@@ -121,38 +176,25 @@ export class ShoppingCartComponent implements OnInit {
   private generateCartItems(){
     let cartItemToAdd: CartItem = {
       cartItemId: 1,
-      shoppingCartId: 1,
       productId: 1,
       quantity: 5
     };
     this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
       let cartItemToAdd: CartItem = {
         cartItemId: 2,
-        shoppingCartId: 1,
         productId: 2,
         quantity: 3
       };
       this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
         let cartItemToAdd: CartItem = {
           cartItemId: 3,
-          shoppingCartId: 1,
           productId: 3,
           quantity: 1
         };
-        this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
-          let cartItemToAdd: CartItem = {
-            cartItemId: 4,
-            shoppingCartId: 1,
-            productId: 4,
-            quantity: 100
-          };
-          this.cartItemService.postCartItem(cartItemToAdd).pipe(take(1)).subscribe(() => {
             console.log("Finished creating mock data.");
             this.loadData();
-          });
         });
       });
-    });
   }
 
   private loadData() {
@@ -176,18 +218,17 @@ export class ShoppingCartComponent implements OnInit {
         this.cartItems = res;
         const newDisplayableItems: DisplayableCartItem[] = [];
         this.cartItems.forEach(item => {
-          const product = this.products[item.productId - 1];
-          const newDisplayableItem: DisplayableCartItem = {
-            cartItemId: item.cartItemId,
-            name: product.name,
-            description: product.description,
-            quantity: item.quantity,
-            stock: product.stock,
-            total: "\$" + (item.quantity * product.price).toFixed(2)
-          };
-          console.log(newDisplayableItem);
-          this.subTotal += item.quantity * product.price;
-          newDisplayableItems.push(newDisplayableItem);
+            const product = this.products[item.productId - 1];
+            const newDisplayableItem: DisplayableCartItem = {
+              cartItemId: item.cartItemId!,
+              name: product.name,
+              description: product.description,
+              quantity: item.quantity,
+              stock: product.stock,
+              total: "\$" + (item.quantity * product.price).toFixed(2)
+            };
+            this.subTotal += item.quantity * product.price;
+            newDisplayableItems.push(newDisplayableItem);
         });
         this.displayableCartItems = newDisplayableItems;
       });
