@@ -7,7 +7,7 @@ import { Product } from '../Entities/Product';
   providedIn: 'root'
 })
 export class ProductService {
-  private api: string = 'api/Products';
+  private api: string = 'http://localhost:5000/api/Products';
   constructor(private http: HttpClient) { }
 
   getAllProducts(): Observable<Product[]> {

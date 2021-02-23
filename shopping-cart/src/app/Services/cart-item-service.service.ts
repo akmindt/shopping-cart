@@ -8,7 +8,7 @@ import { CartItem } from '../Entities/CartItem';
 })
 export class CartItemService {
   
-  private api: string = 'api/CartItems';
+  private api: string = 'http://localhost:5000/api/CartItems';
   constructor(private http: HttpClient) { }
 
   getAllCartItems(): Observable<CartItem[]> {
